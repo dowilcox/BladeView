@@ -148,32 +148,19 @@ class BladeView extends View {
      */
     public function extendBlade() {
 
-        $self = $this;
-
         $this->instance->share('view', $this);
 
         // Get the blade compiler
         $bladeCompiler = $this->container['blade.compiler'];
 
-        // Add $this->fetch to blade.
-        /*$bladeCompiler->extend(function($view, $compiler) {
+        // Add $this->fetch() to blade as @fetch()
+        $bladeCompiler->extend(function($view, $compiler) {
+
             $pattern = $compiler->createMatcher('fetch');
-            debug($pattern);
-            $pattern = $compiler->createMatcher('datetime');
 
-            return preg_replace($pattern, '$1<?php echo $2->format(\'m/d/Y H:i\'); ?>', $view);
-        });*/
+            return preg_replace($pattern, '$1<?php echo $view->fetch($2); ?>', $view);
 
-        // Testing
-        /*$bladeCompiler->extend(function($view, $compiler) {
-
-            $pattern = $compiler->createMatch('fetch');
-
-            debug($this->fetch(''))
-
-            return preg_replace($pattern, '$1<?php echo "blade extension test."; ?>', $view);
-
-        });*/
+        });
 
     }
 
