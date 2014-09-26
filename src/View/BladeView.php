@@ -100,7 +100,7 @@ class BladeView extends View {
         $bladeViewFile = $this->_getViewFileNameBlade($viewFile);
 
         // Compile the file.
-        $content = $this->instance->make($bladeViewFile, $data);
+        $content = $this->renderBlade($bladeViewFile, $data);
 
         $afterEvent = $this->dispatchEvent('View.afterRenderFile', [$viewFile, $content]);
         if (isset($afterEvent->result)) {
@@ -224,12 +224,28 @@ class BladeView extends View {
 
     }
 
+    /**
+     * Wrapper for our instance of blade.
+     * @param $file
+     * @param $data
+     * @return mixed
+     */
+    public function renderBlade($file, $data) {
+        return $this->instance->make($file, $data);
+    }
+
+    /**
+     * Register the file system.
+     */
     public function registerFilesystem() {
         $this->container->bindShared('files', function() {
             return new Filesystem;
         });
     }
 
+    /**
+     * Register the events.
+     */
     public function registerEvents() {
         $this->container->bindShared('events', function() {
             return new Dispatcher;
