@@ -15,6 +15,12 @@
     "require": {
         "illuminate/view": "4.1.*"
     },
+    "autoload": {
+        "psr-4": {
+            "BladeView\\": "src",
+            "BladeView\\Test\\Fixture\\": "tests\\Fixture"
+        }
+    },
     "extra": {
         "installer-name": "BladeView"
     }
