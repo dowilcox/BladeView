@@ -15,6 +15,7 @@ use Illuminate\View\Engines\EngineResolver;
 use Illuminate\View\Compilers\BladeCompiler;
 use Illuminate\View\FileViewFinder;
 use Illuminate\View\Environment;
+use Closure;
 
 class BladeView extends View {
 
@@ -62,7 +63,7 @@ class BladeView extends View {
 
         $this->viewPaths = [APP.'Template/'];
 
-        $this->cachePath = CACHE;
+        $this->cachePath = CACHE.'blade';
 
         $this->registerFilesystem();
 
@@ -74,19 +75,17 @@ class BladeView extends View {
 
         $this->instance = $this->registerEnvironment();
 
-        $this->extendBlade();
+        $this->registerShares();
 
     }
 
+
     /**
-     * Renders and returns output for given view filename with its
-     * array of data. Handles parent/extended views.
-     *
-     * @param string $viewFile Filename of the view
-     * @param array $data Data to include in rendered view. If empty the current
-     *   View::$viewVars will be used.
-     * @return string Rendered output
-     * @throws \LogicException When a block is left open.
+     * Overwrites the main _render function just replacing the CakePHP template render with blade.
+     * @param string $viewFile
+     * @param array $data
+     * @return \Illuminate\View\View|mixed|string
+     * @throws LogicException
      */
     protected function _render($viewFile, $data = array()) {
         if (empty($data)) {
@@ -136,7 +135,9 @@ class BladeView extends View {
 
         // Remove the full path
         $fileName = str_replace($this->viewPaths[0], '', $this->_getViewFileName($view));
+        // Drop the extension
         $fileName = str_replace($this->_ext, '', $fileName);
+        // Convert slashes into periods.
         $fileName = str_replace('/', '.', $fileName);
 
         return $fileName;
@@ -144,22 +145,81 @@ class BladeView extends View {
     }
 
     /**
-     * Extend blade by adding cake functions to the compiler.
+     * Extend Blade.
+     * @param callable $function
+     * @return mixed
      */
-    public function extendBlade() {
-
-        $this->instance->share('view', $this);
+    public function extendBlade(Closure $function) {
 
         // Get the blade compiler
         $bladeCompiler = $this->container['blade.compiler'];
 
-        // Add $this->fetch() to blade as @fetch()
-        $bladeCompiler->extend(function($view, $compiler) {
+        return $bladeCompiler->extend($function);
 
+    }
+
+    /**
+     * Turn CakePHP template functions into Blade functions.
+     */
+    public function registerShares() {
+
+        // Share the View with Blade.
+        $this->instance->share('view', $this);
+
+        // Load the helpers. Turn $this->Html into $Html
+        // Helpers MUST be define in a controller to be used this way.
+        $registry = $this->helpers();
+        $helpers = $registry->normalizeArray($this->helpers);
+        foreach($helpers as $properties) {
+            $this->instance->share($properties['class'], $this->{$properties['class']});
+        }
+
+        // Turn $this->fetch() into @fetch()
+        $this->extendBlade(function($view, $compiler) {
             $pattern = $compiler->createMatcher('fetch');
+            return preg_replace($pattern, '$1<?php echo $view->fetch$2; ?>', $view);
+        });
 
-            return preg_replace($pattern, '$1<?php echo $view->fetch($2); ?>', $view);
+        // Turn $this->start() into @start()
+        $this->extendBlade(function($view, $compiler) {
+            $pattern = $compiler->createMatcher('start');
+            return preg_replace($pattern, '$1<?php echo $view->start$2; ?>', $view);
+        });
 
+        // Turn $this->append() into @append()
+        $this->extendBlade(function($view, $compiler) {
+            $pattern = $compiler->createMatcher('append');
+            return preg_replace($pattern, '$1<?php echo $view->append$2; ?>', $view);
+        });
+
+        // Turn $this->prepend() into @prepend()
+        $this->extendBlade(function($view, $compiler) {
+            $pattern = $compiler->createMatcher('prepend');
+            return preg_replace($pattern, '$1<?php echo $view->prepend$2; ?>', $view);
+        });
+
+        // Turn $this->assign() into @assign()
+        $this->extendBlade(function($view, $compiler) {
+            $pattern = $compiler->createMatcher('assign');
+            return preg_replace($pattern, '$1<?php echo $view->assign$2; ?>', $view);
+        });
+
+        // Turn $this->end() into @end()
+        $this->extendBlade(function($view, $compiler) {
+            $pattern = $compiler->createMatcher('end');
+            return preg_replace($pattern, '$1<?php echo $view->end(); ?>$2', $view);
+        });
+
+        // Turn $this->element() into @element()
+        $this->extendBlade(function($view, $compiler) {
+            $pattern = $compiler->createMatcher('element');
+            return preg_replace($pattern, '$1<?php echo $view->element$2; ?>', $view);
+        });
+
+        // Turn $this->cell() into @cell()
+        $this->extendBlade(function($view, $compiler) {
+            $pattern = $compiler->createMatcher('cell');
+            return preg_replace($pattern, '$1<?php echo $view->cell$2; ?>', $view);
         });
 
     }
@@ -231,7 +291,6 @@ class BladeView extends View {
 
         $this->container->bindShared('view.finder', function($app) use($self) {
             $paths = $self->viewPaths;
-
             return new FileViewFinder($app['files'], $paths);
         });
     }
