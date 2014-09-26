@@ -1,0 +1,21 @@
+{
+    "name": "dowilcox/bladeview",
+    "description": "Blade template engine for CakePHP 3",
+    "type": "cakephp-plugin",
+    "keywords": ["cakephp", "blade", "view"],
+    "homepage": "https://github.com/dowilcox/BladeView",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Donald Wilcox",
+            "homepage": "http://www.dowilcox.com",
+            "role": "Author"
+        }
+    ],
+    "require": {
+        "illuminate/view": "4.1.*"
+    },
+    "extra": {
+        "installer-name": "BladeView"
+    }
+}
