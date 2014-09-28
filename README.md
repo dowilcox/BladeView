@@ -68,5 +68,5 @@ Before:
 ```
 After:
 ```php
-{{ $view->Html->css() }}
+{{ $_view->Html->css() }}
 ```

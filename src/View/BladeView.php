@@ -137,7 +137,7 @@ class BladeView extends View {
     public function registerShares() {
 
         // Share the View with Blade.
-        $this->share('view', $this);
+        $this->share('_view', $this);
 
         // Load the helpers. Turn $this->Html into $Html
         // Helpers MUST be define in a controller to be used this way.
@@ -149,56 +149,56 @@ class BladeView extends View {
             // This only works if the helper is loaded from a controller. Need to see about getting all attached helpers.
             $this->extendBlade(function ($view) use ($class, $properties) {
                 $pattern = '/(?<!\w)(\s*)@' . $class . '\-\>((?:[a-z][a-z]+))(\s*\(.*\))/';
-                return preg_replace($pattern, '$1<?php echo $view->' . $properties['class'] . '->$2$3; ?>', $view);
+                return preg_replace($pattern, '$1<?php echo $_view->' . $properties['class'] . '->$2$3; ?>', $view);
             });
         }
 
         // Turn $this->fetch() into @fetch()
         $this->extendBlade(function($view, $compiler) {
             $pattern = $compiler->createMatcher('fetch');
-            return preg_replace($pattern, '$1<?php echo $view->fetch$2; ?>', $view);
+            return preg_replace($pattern, '$1<?php echo $_view->fetch$2; ?>', $view);
         });
 
         // Turn $this->start() into @start()
         $this->extendBlade(function($view, $compiler) {
             $pattern = $compiler->createMatcher('start');
-            return preg_replace($pattern, '$1<?php echo $view->start$2; ?>', $view);
+            return preg_replace($pattern, '$1<?php echo $_view->start$2; ?>', $view);
         });
 
         // Turn $this->append() into @append()
         $this->extendBlade(function($view, $compiler) {
             $pattern = $compiler->createMatcher('append');
-            return preg_replace($pattern, '$1<?php echo $view->append$2; ?>', $view);
+            return preg_replace($pattern, '$1<?php echo $_view->append$2; ?>', $view);
         });
 
         // Turn $this->prepend() into @prepend()
         $this->extendBlade(function($view, $compiler) {
             $pattern = $compiler->createMatcher('prepend');
-            return preg_replace($pattern, '$1<?php echo $view->prepend$2; ?>', $view);
+            return preg_replace($pattern, '$1<?php echo $_view->prepend$2; ?>', $view);
         });
 
         // Turn $this->assign() into @assign()
         $this->extendBlade(function($view, $compiler) {
             $pattern = $compiler->createMatcher('assign');
-            return preg_replace($pattern, '$1<?php echo $view->assign$2; ?>', $view);
+            return preg_replace($pattern, '$1<?php echo $_view->assign$2; ?>', $view);
         });
 
         // Turn $this->end() into @end()
         $this->extendBlade(function($view, $compiler) {
             $pattern = $compiler->createMatcher('end');
-            return preg_replace($pattern, '$1<?php echo $view->end(); ?>$2', $view);
+            return preg_replace($pattern, '$1<?php echo $_view->end(); ?>$2', $view);
         });
 
         // Turn $this->element() into @element()
         $this->extendBlade(function($view, $compiler) {
             $pattern = $compiler->createMatcher('element');
-            return preg_replace($pattern, '$1<?php echo $view->element$2; ?>', $view);
+            return preg_replace($pattern, '$1<?php echo $_view->element$2; ?>', $view);
         });
 
         // Turn $this->cell() into @cell()
         $this->extendBlade(function($view, $compiler) {
             $pattern = $compiler->createMatcher('cell');
-            return preg_replace($pattern, '$1<?php echo $view->cell$2; ?>', $view);
+            return preg_replace($pattern, '$1<?php echo $_view->cell$2; ?>', $view);
         });
 
     }
