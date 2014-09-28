@@ -146,6 +146,7 @@ class BladeView extends View {
         foreach($helpers as $properties) {
             $class = strtolower($properties['class']);
             // Turn $this->Html->css() into @html->css()
+            // This only works if the helper is loaded from a controller. Need to see about getting all attached helpers.
             $this->extendBlade(function ($view) use ($class, $properties) {
                 $pattern = '/(?<!\w)(\s*)@' . $class . '\-\>((?:[a-z][a-z]+))(\s*\(.*\))/';
                 return preg_replace($pattern, '$1<?php echo $view->' . $properties['class'] . '->$2$3; ?>', $view);
