@@ -79,62 +79,35 @@ class BladeView extends View {
 
     }
 
-
     /**
-     * Overwrites the main _render function just replacing the CakePHP template render with blade.
-     * @param string $viewFile
-     * @param array $data
-     * @return \Illuminate\View\View|mixed|string
-     * @throws LogicException
+     * Sandbox method to evaluate a template / view script in.
+     *
+     * @param string $viewFile Filename of the view
+     * @param array $dataForView Data to include in rendered view.
+     *    If empty the current View::$viewVars will be used.
+     * @return string Rendered output
      */
-    protected function _render($viewFile, $data = array()) {
-        if (empty($data)) {
-            $data = $this->viewVars;
-        }
-        $this->_current = $viewFile;
-        $initialBlocks = count($this->Blocks->unclosed());
+    protected function _evaluate($viewFile, $dataForView) {
 
-        $this->dispatchEvent('View.beforeRenderFile', [$viewFile]);
-
-        // Make the file path and name blade friendly.
+        // Convert to a blade readable path
         $bladeViewFile = $this->_getViewFileNameBlade($viewFile);
 
-        // Compile the file.
-        $content = $this->renderBlade($bladeViewFile, $data);
+        // Compile
+        return $this->renderBlade($bladeViewFile, $dataForView);
 
-        $afterEvent = $this->dispatchEvent('View.afterRenderFile', [$viewFile, $content]);
-        if (isset($afterEvent->result)) {
-            $content = $afterEvent->result;
-        }
-
-        if (isset($this->_parents[$viewFile])) {
-            $this->_stack[] = $this->fetch('content');
-            $this->assign('content', $content);
-
-            $content = $this->_render($this->_parents[$viewFile]);
-            $this->assign('content', array_pop($this->_stack));
-        }
-
-        $remainingBlocks = count($this->Blocks->unclosed());
-
-        if ($initialBlocks !== $remainingBlocks) {
-            throw new LogicException(sprintf(
-                'The "%s" block was left open. Blocks are not allowed to cross files.',
-                $this->Blocks->active()
-            ));
-        }
-        return $content;
     }
 
     /**
      * Take the file path from cake's templates and work it into what blade can use.
-     * @param $view
+     * @param $viewFile
      * @return mixed
      */
-    public function _getViewFileNameBlade($view) {
+    public function _getViewFileNameBlade($viewFile) {
 
         // Remove the full path
-        $fileName = str_replace($this->viewPaths[0], '', $this->_getViewFileName($view));
+        foreach($this->viewPaths as $path) {
+            $fileName = str_replace($path, '', $this->_getViewFileName($viewFile));
+        }
         // Drop the extension
         $fileName = str_replace($this->_ext, '', $fileName);
         // Convert slashes into periods.
@@ -171,7 +144,12 @@ class BladeView extends View {
         $registry = $this->helpers();
         $helpers = $registry->normalizeArray($this->helpers);
         foreach($helpers as $properties) {
-            $this->instance->share($properties['class'], $this->{$properties['class']});
+            $class = strtolower($properties['class']);
+            // Turn $this->Html->css() into @html->css()
+            $this->extendBlade(function ($view) use ($class, $properties) {
+                $pattern = '/(?<!\w)(\s*)@' . $class . '\-\>((?:[a-z][a-z]+))(\s*\(.*\))/';
+                return preg_replace($pattern, '$1<?php echo $view->' . $properties['class'] . '->$2$3; ?>', $view);
+            });
         }
 
         // Turn $this->fetch() into @fetch()

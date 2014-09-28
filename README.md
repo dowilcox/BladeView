@@ -58,7 +58,7 @@ Before:
 ```
 After:
 ```php
-{{ $Html->css() }}
+@html->css()
 ```
 
 ###Helpers (if NOT loaded in a controller):
