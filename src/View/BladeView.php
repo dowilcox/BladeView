@@ -137,7 +137,7 @@ class BladeView extends View {
     public function registerShares() {
 
         // Share the View with Blade.
-        $this->instance->share('view', $this);
+        $this->share('view', $this);
 
         // Load the helpers. Turn $this->Html into $Html
         // Helpers MUST be define in a controller to be used this way.
@@ -211,6 +211,16 @@ class BladeView extends View {
      */
     public function renderBlade($file, $data) {
         return $this->instance->make($file, $data);
+    }
+
+    /**
+     * Share data across all views.
+     * @param $variable
+     * @param $value
+     * @return mixed
+     */
+    public function share($variable, $value) {
+        return $this->instance->share($variable, $value);
     }
 
     /**
