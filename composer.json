@@ -1,5 +1,5 @@
 {
-    "name": "dowilcox/bladeview",
+    "name": "dowilcox/blade-view",
     "description": "Blade template engine for CakePHP3",
     "type": "cakephp-plugin",
     "keywords": ["cakephp3", "cakephp", "blade", "view"],
