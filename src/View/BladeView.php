@@ -48,6 +48,12 @@ class BladeView extends View {
     public $_ext = '.blade.php';
 
     /**
+     * The helpers that have been loaded.
+     * @var array
+     */
+    protected $_loadedHelpers = [];
+
+    /**
      * Class startup.
      * @param Request $request
      * @param Response $response
@@ -64,6 +70,8 @@ class BladeView extends View {
         $this->viewPaths = [APP.'Template/'];
 
         $this->cachePath = CACHE.'blade';
+
+        $this->getHelpers();
 
         $this->registerFilesystem();
 
@@ -139,16 +147,12 @@ class BladeView extends View {
         // Share the View with Blade.
         $this->share('_view', $this);
 
-        // Load the helpers. Turn $this->Html into $Html
-        // Helpers MUST be define in a controller to be used this way.
-        $registry = $this->helpers();
-        $helpers = $registry->normalizeArray($this->helpers);
-        foreach($helpers as $properties) {
-            $class = strtolower($properties['class']);
+        // Easy way to use helpers
+        foreach($this->_loadedHelpers as $properties) {
             // Turn $this->Html->css() into @html->css()
             // This only works if the helper is loaded from a controller. Need to see about getting all attached helpers.
-            $this->extendBlade(function ($view) use ($class, $properties) {
-                $pattern = '/(?<!\w)(\s*)@' . $class . '\-\>((?:[a-z][a-z]+))(\s*\(.*\))/';
+            $this->extendBlade(function ($view) use($properties) {
+                $pattern = '/(?<!\w)(\s*)@' . strtolower($properties['class']) . '\-\>((?:[a-z][a-z]+))(\s*\(.*\))/';
                 return preg_replace($pattern, '$1<?php echo $_view->' . $properties['class'] . '->$2$3; ?>', $view);
             });
         }
@@ -221,6 +225,14 @@ class BladeView extends View {
      */
     public function share($variable, $value) {
         return $this->instance->share($variable, $value);
+    }
+
+    /**
+     * Get the helpers into an array we can use.
+     */
+    protected function getHelpers() {
+        $registry = $this->helpers();
+        $this->_loadedHelpers = $registry->normalizeArray($this->helpers);
     }
 
     /**
