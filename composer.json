@@ -15,12 +15,12 @@
     "require": {
         "cakephp/cakephp": "3.0.*-dev",
         "cakephp/plugin-installer": "dev-master",
-        "illuminate/view": "4.1.*"
+        "illuminate/view": "4.2.*"
     },
     "autoload": {
         "psr-4": {
-            "BladeView\\": "src",
-            "BladeView\\Test\\Fixture\\": "tests\\Fixture"
+            "Dowilcox\\BladeView\\": "src",
+            "Dowilcox\\BladeView\\Test\\Fixture\\": "tests\\Fixture"
         }
     },
     "extra": {

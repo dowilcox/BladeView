@@ -27,7 +27,7 @@ Now change all the template files in src/Template from .ctp to .blade.php
 
 Usage
 =====
-See Laravel's documenation for Blade: http://laravel.com/docs/4.1/templates.
+See Laravel's documenation for Blade: http://laravel.com/docs/4.2/templates.
 
 CakePHP view functions and helpers work a bit different.
 
@@ -59,14 +59,4 @@ Before:
 After:
 ```php
 @html->css()
-```
-
-###Helpers (if NOT loaded in a controller):
-Before:
-```php
-<?php echo $this->Html->css(); ?>
-```
-After:
-```php
-{{ $_view->Html->css() }}
 ```
