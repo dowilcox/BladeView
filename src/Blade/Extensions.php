@@ -110,8 +110,8 @@ class Extensions {
      */
     protected function end() {
         $this->compiler->extend(function($view, $compiler) {
-            $pattern = $compiler->createMatcher('end');
-            return preg_replace($pattern, '$1<?php echo $_view->end$2; ?>', $view);
+            $pattern = $compiler->createPlainMatcher('end');
+            return preg_replace($pattern, '$1<?php echo $_view->end(); ?>$2', $view);
         });
     }
 
@@ -132,6 +132,16 @@ class Extensions {
         $this->compiler->extend(function($view, $compiler) {
             $pattern = $compiler->createMatcher('cell');
             return preg_replace($pattern, '$1<?php echo $_view->cell$2; ?>', $view);
+        });
+    }
+
+    /**
+     * Turn $this->extend() into @extend().
+     */
+    protected function extend() {
+        $this->compiler->extend(function($view, $compiler) {
+            $pattern = $compiler->createMatcher('extend');
+            return preg_replace($pattern, '$1<?php echo $_view->extend$2; ?>', $view);
         });
     }
 

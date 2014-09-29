@@ -6,11 +6,11 @@ Install
 =======
 Composer:
 ```json
-[
-	"require": {
-	    "dowilcox/blade-view": "0.1.*"
-	}
-]
+    [
+        "require": {
+            "dowilcox/blade-view": "0.2.*"
+        }
+    ]
 ```
 
 In your bootstrap.php:
@@ -34,11 +34,11 @@ CakePHP view functions and helpers work a bit different.
 ###Variables
 Before:
 ```php
-<?php echo $variable; ?>
+<?php echo h($variable); ?>
 ```
 After:
 ```php
-{{ $variable }}
+{{{ $variable }}}
 ```
 
 ###View functions:
@@ -60,3 +60,36 @@ After:
 ```php
 @html->css()
 ```
+
+More Examples
+=============
+
+	{{-- src/Template/Common/view.blade.php --}}
+    <h1>@fetch('title')</h1>
+    @fetch('content')
+    
+    <div class="actions">
+        <h3>Related actions</h3>
+        <ul>
+        @fetch('sidebar')
+        </ul>
+    </div>
+
+
+    {{-- src/Template/Posts/view.blade.php --}}
+    @extend('/Common/view')
+    
+    @assign('title', $post)
+    
+    @start('sidebar')
+    <li>
+        @html->link('edit', [
+            'action' => 'edit',
+            $post['Post']['id']
+        ])
+    </li>
+    @end;
+    
+    {{-- The remaining content will be available as the 'content' block --}}
+    {{-- In the parent view. --}}
+    {{{ $post['Post']['body'] }}}
