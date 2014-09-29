@@ -31,7 +31,9 @@ class ServiceProvider {
      */
     protected $app;
 
-
+    /**
+     * @var Factory
+     */
     protected $factory;
 
     public function __construct($viewPaths = [], $cachePath) {

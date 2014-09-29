@@ -8,7 +8,7 @@ Composer:
 ```json
 [
 	"require": {
-	    "dowilcox/blade-view": "dev-master"
+	    "dowilcox/blade-view": "0.0.*"
 	}
 ]
 ```
