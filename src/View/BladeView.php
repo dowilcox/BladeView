@@ -6,7 +6,8 @@ use Cake\View\View;
 use Cake\Network\Request;
 use Cake\Network\Response;
 use Cake\Event\EventManager;
-use Dowilcox\BladeView\Blade\BladeServiceProvider;
+use Dowilcox\BladeView\Blade\Extensions;
+use Dowilcox\BladeView\Blade\ServiceProvider;
 use Closure;
 
 class BladeView extends View {
@@ -20,20 +21,30 @@ class BladeView extends View {
     /**
      * @var BladeServiceProvider
      */
-    protected $_bladeServiceProvider;
+    protected $_serviceProvider;
 
     /**
      * @var BladeServiceProvider
      */
     protected $_blade;
 
+    /**
+     * The loaded helpers.
+     * @var array
+     */
+    protected $_loadedHelpers = [];
+
     public function __construct(Request $request = null, Response $response = null, EventManager $eventManager = null, array $viewOptions = []) {
 
         parent::__construct($request, $response, $eventManager, $viewOptions);
 
-        $this->_bladeServiceProvider = new BladeServiceProvider(Configure::read('App.paths.templates'), CACHE.'bladeView');
+        $this->_serviceProvider = new ServiceProvider(Configure::read('App.paths.templates'), CACHE.'bladeView');
 
-        $this->_blade = $this->_bladeServiceProvider()->getFactory();
+        $this->loadBlade();
+
+        $this->loadHelpers();
+
+        $this->loadExtensions();
 
     }
 
@@ -63,8 +74,10 @@ class BladeView extends View {
      * @return string
      */
     protected function _convertFileNameForBlade($viewFile) {
+        $templatePaths = Configure::read('App.paths.templates');
+
         // Remove the full path
-        foreach(Configure::read('App.paths.templates') as $path) {
+        foreach($templatePaths as $path) {
             $fileName = str_replace($path, '', $this->_getViewFileName($viewFile));
         }
         // Drop the extension
@@ -73,6 +86,34 @@ class BladeView extends View {
         $fileName = str_replace('/', '.', $fileName);
 
         return $fileName;
+    }
+
+    /**
+     * Get the helpers.
+     */
+    protected function loadHelpers() {
+        $registry = $this->helpers();
+
+        $this->_loadedHelpers = $registry->normalizeArray($this->helpers);
+    }
+
+    /**
+     * Load the custom blade extensions for CakePHP.
+     * @return Extensions
+     */
+    protected function loadExtensions() {
+        $compiler = $this->_serviceProvider->getCompiler();
+        $helpers = $this->_loadedHelpers;
+
+        $extensions = new Extensions($compiler, $helpers);
+        return $extensions;
+    }
+
+    /**
+     * Load blade from the service provider.
+     */
+    protected function loadBlade() {
+        $this->_blade = $this->_serviceProvider()->getFactory();
     }
 
     /**

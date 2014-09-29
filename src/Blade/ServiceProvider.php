@@ -11,7 +11,7 @@ use Illuminate\View\Compilers\BladeCompiler;
 use Illuminate\View\FileViewFinder;
 use Illuminate\View\Factory;
 
-class BladeServiceProvider {
+class ServiceProvider {
 
     /**
      * The paths for blade to look for files.
