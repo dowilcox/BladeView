@@ -113,7 +113,7 @@ class BladeView extends View {
      * Load blade from the service provider.
      */
     protected function loadBlade() {
-        $this->_blade = $this->_serviceProvider()->getFactory();
+        $this->_blade = $this->_serviceProvider->getFactory();
     }
 
     /**
@@ -131,7 +131,7 @@ class BladeView extends View {
      */
     public function extendBlade(Closure $function) {
         // Get the blade compiler
-        $compiler = $this->_bladeServiceProvider()->getCompiler();
+        $compiler = $this->_serviceProvider->getCompiler();
 
         return $compiler->extend($function);
     }
