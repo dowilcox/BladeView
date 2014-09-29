@@ -42,7 +42,7 @@ class BladeView extends View {
 
         $this->loadBlade();
 
-        $this->loadHelpers();
+        $this->_loadHelpers();
 
         $this->loadExtensions();
 
@@ -91,7 +91,7 @@ class BladeView extends View {
     /**
      * Get the helpers.
      */
-    protected function loadHelpers() {
+    protected function _loadHelpers() {
         $registry = $this->helpers();
 
         $this->_loadedHelpers = $registry->normalizeArray($this->helpers);

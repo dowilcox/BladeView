@@ -20,7 +20,7 @@ Plugin::load('BladeView', ['bootstrap' => false]);
 
 In your controller:
 ```php
-public $viewClass = 'BladeView.Blade';
+public $viewClass = '\Dowilcox\BladeView\View\BladeView';
 ```
 
 Now change all the template files in src/Template from .ctp to .blade.php
