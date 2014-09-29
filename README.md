@@ -64,32 +64,35 @@ After:
 More Examples
 =============
 
-	{{-- src/Template/Common/view.blade.php --}}
-    <h1>@fetch('title')</h1>
-    @fetch('content')
-    
-    <div class="actions">
-        <h3>Related actions</h3>
-        <ul>
-        @fetch('sidebar')
-        </ul>
-    </div>
+```php
+{{-- src/Template/Common/view.blade.php --}}
+<h1>@fetch('title')</h1>
+@fetch('content')
 
+<div class="actions">
+    <h3>Related actions</h3>
+    <ul>
+    @fetch('sidebar')
+    </ul>
+</div>
+```
 
-    {{-- src/Template/Posts/view.blade.php --}}
-    @extend('/Common/view')
-    
-    @assign('title', $post)
-    
-    @start('sidebar')
-    <li>
-        @html->link('edit', [
-            'action' => 'edit',
-            $post['Post']['id']
-        ])
-    </li>
-    @end;
-    
-    {{-- The remaining content will be available as the 'content' block --}}
-    {{-- In the parent view. --}}
-    {{{ $post['Post']['body'] }}}
+```php
+{{-- src/Template/Posts/view.blade.php --}}
+@extend('/Common/view')
+
+@assign('title', $post)
+
+@start('sidebar')
+<li>
+    @html->link('edit', [
+        'action' => 'edit',
+        $post['Post']['id']
+    ])
+</li>
+@end;
+
+{{-- The remaining content will be available as the 'content' block --}}
+{{-- In the parent view. --}}
+{{{ $post['Post']['body'] }}}
+```
