@@ -50,7 +50,7 @@ class ServiceProvider {
 
         $this->registerViewFinder();
 
-        $this->registyFactory();
+        $this->registerFactory();
 
     }
 
