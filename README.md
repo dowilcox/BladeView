@@ -90,7 +90,7 @@ More Examples
         $post['Post']['id']
     ])
 </li>
-@end;
+@end()
 
 {{-- The remaining content will be available as the 'content' block --}}
 {{-- In the parent view. --}}

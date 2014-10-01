@@ -110,8 +110,8 @@ class Extensions {
      */
     protected function end() {
         $this->compiler->extend(function($view, $compiler) {
-            $pattern = $compiler->createPlainMatcher('end');
-            return preg_replace($pattern, '$1<?php echo $_view->end(); ?>$2', $view);
+            $pattern = $compiler->createMatcher('end');
+            return preg_replace($pattern, '$1<?php echo $_view->end$2; ?>', $view);
         });
     }
 
