@@ -13,8 +13,7 @@
         }
     ],
     "require": {
-        "cakephp/cakephp": "3.0.*-dev",
-        "cakephp/plugin-installer": "dev-master",
+        "cakephp/cakephp": "~3.0",
         "illuminate/view": "4.2.*"
     },
     "autoload": {
