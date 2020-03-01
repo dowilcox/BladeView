@@ -13,7 +13,7 @@
         }
     ],
     "require": {
-        "cakephp/cakephp": "~3.0",
+        "cakephp/cakephp": "3.6.*",
         "illuminate/view": "4.2.*"
     },
     "autoload": {
